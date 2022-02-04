@@ -25,4 +25,12 @@
       command: mv CSE356/hw0/hw0.html CSE356/hw0/lolli.jpg /var/www/html 
 
     - name: Edit nginx configuration to use hw0.html file in root dir
-      command: sed -i 's/index index.html index.htm index.nginx-debian.html;/index index.html index.htm hw0.html;/' /etc/nginx/sites-enabled/default
+      ansible.builtin.replace:
+          path: /etc/nginx/sites-available/default
+          regexp: '\bindex.nginx-debian.html\b'
+          replace: 'hw0.html'
+
+    - name: Restart nginx
+      service:
+          name: nginx
+          state: restarted

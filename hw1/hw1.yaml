@@ -1,11 +1,11 @@
-- name: NGINX setup
+- name: CSE356 HW1
   hosts: hw1
   become: True
   tasks:
     - name: Install nginx command
       apt:
-          name: nginx
-          state: latest
+        name: nginx
+        state: latest
 
     - name: Start nginx
       service:
@@ -20,17 +20,17 @@
 
     - name: Clone CSE356 Repository
       command: git clone https://github.com/aisenkim/CSE356.git
-      
+
     - name: Move hw0 files from cloned respository to root directory
-      command: mv CSE356/hw0/hw0.html CSE356/hw0/lolli.jpg /var/www/html 
+      command: mv CSE356/hw0/hw0.html CSE356/hw0/lolli.jpg /var/www/html
 
     - name: Edit nginx configuration to use hw0.html file in root dir
       ansible.builtin.replace:
-          path: /etc/nginx/sites-available/default
-          regexp: '\bindex.nginx-debian.html\b'
-          replace: 'hw0.html'
+        path: /etc/nginx/sites-available/default
+        regexp: '\bindex.nginx-debian.html\b'
+        replace: "hw0.html"
 
     - name: Restart nginx
       service:
-          name: nginx
-          state: restarted
+        name: nginx
+        state: restarted

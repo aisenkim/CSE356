@@ -12,12 +12,6 @@
         name: nginx
         state: started
 
-    - name: Get installed version
-      command: nginx -v
-
-    - name: Status of nginx service
-      command: systemctl status nginx
-
     - name: Clone CSE356 Repository
       command: git clone https://github.com/aisenkim/CSE356.git
 

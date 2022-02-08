@@ -1,0 +1,22 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background-color: #8be9fd;
+}
+
+h1 {
+  color: #fff;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box div {
+  /* width: 400px;
+  height: 400px; */
+  max-width: 50%;
+}

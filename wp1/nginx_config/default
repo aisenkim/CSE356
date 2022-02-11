@@ -52,6 +52,7 @@ server {
                 	proxy_pass         http://localhost:3000;
 		}
 
+        # FOR PUTTING HEADER IN THE GET REQUEST
 		add_header X-CSE356 61f9c246ca96e9505dd3f812;
 		try_files $uri $uri/ =404;
 	}
@@ -64,6 +65,8 @@ server {
 		#}
 		#try_files $uri $uri/ =404;
 		#add_header Access-Control-Allow-Origin *;
+        #
+        #FOR PREFLIGHT REQUESTS
 		if ($request_method = OPTIONS) {
 			add_header X-CSE356 61f9c246ca96e9505dd3f812;
 		}

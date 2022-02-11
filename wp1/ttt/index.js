@@ -1,5 +1,5 @@
-// const url = "http://194.113.75.49/ttt/play";
-const url = "http://localhost:3000/ttt/play";
+const url = "http://194.113.75.49/ttt/play";
+//const url = "http://localhost:3000/ttt/play";
 
 let board = {
   grid: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -20,9 +20,9 @@ const postBoard = (event) => {
   let fetchPost = {
     method: "POST",
     headers: {
-      "Content-Type": "application/json; charset=UTF-8",
+      //"Content-Type": "text/plain",
+      "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET POST",
     },
     body: JSON.stringify(board),
   };

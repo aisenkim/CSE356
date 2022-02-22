@@ -1,5 +1,5 @@
-const url = "http://194.113.75.49/ttt/play";
-//const url = "http://localhost:3000/ttt/play";
+// const url = "http://194.113.75.49/ttt/play";
+const url = "http://localhost:3000/ttt/play";
 
 let board = {
   grid: [" ", " ", " ", " ", " ", " ", " ", " ", " "],

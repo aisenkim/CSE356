@@ -5,9 +5,15 @@ body {
   background-color: #282a36;
 }
 
-#title {
+h1{
   color: #ff79c6;
 }
+
+h2{
+  color: #ff79c6;
+}
+
+
 
 .label-name {
   color: #ffb86c;
@@ -53,4 +59,8 @@ body {
   font-weight: bold;
   font-size: 42pt;
   justify-content: center;
+}
+
+.forms {
+  margin: 10px;
 }

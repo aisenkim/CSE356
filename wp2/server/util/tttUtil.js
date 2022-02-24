@@ -15,6 +15,24 @@ const checkWinner = (board) => {
     return winner;
 };
 
+/**
+ * Check if client side user has altered the board
+ * And it's a valid move
+ * @param previousBoard - last move saved on db
+ * @param currentBoard - current board after client made move
+ * @return true - Legal false - Illegal
+ */
+const isBoardLegal = (previousBoard, currentBoard) => {
+   let alteredCount = 0; // If altered count > 1 mean altered
+
+  for (let i = 0; i < previousBoard.length; i++) {
+      if(previousBoard[i] !== currentBoard[i])
+          alteredCount++
+  }
+
+    return alteredCount <= 1
+}
+
 // const calculateRemainingSpace = (board) => {
 //   let spaceRemaining = 0;
 //   for (let i = 0; i < board.grid.length; i++) {
@@ -24,5 +42,6 @@ const checkWinner = (board) => {
 // };
 
 module.exports = {
-   checkWinner 
+   checkWinner,
+    isBoardLegal
 }

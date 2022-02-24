@@ -1,7 +1,6 @@
 const User = require('../models/user')
 const bcrypt = require("bcryptjs")
 const NodeMailer = require('nodemailer')
-const crypto = require('crypto')
 
 // FOR NODEMAILER
 // const transporter = NodeMailer.createTransport({
@@ -27,15 +26,18 @@ login = async(req, res) => {
 
     try {
         const user = await User.findOne({username})
-        if (!user)
+
+        // USERS NEED TO GET VERIFIED (EMAIL)
+        if (!user || !user.verified)
             return res.status(400).json({status: "ERROR"})
 
         const matching = await bcrypt.compare(password, user.password)
-        console.log("isMatching: ", matching)
+
         if(!matching)
             return res.json({status: "ERROR"})
 
-        req.session.isAuth = true;
+        req.session.isAuth = true
+        req.session.username = username
         res.json({status: "OK"})
     } catch(err) {
        console.log("ERROR: ", err)
@@ -102,8 +104,31 @@ adduser = async (req, res) => {
 
 }
 
+verify = async(req, res) => {
+    const {email, key} = req.body
+
+    try{
+        let user = await User.findOne({email})
+
+        if(!user)
+            return res.status(400).json({status:'ERROR'})
+        if(user.code !== key && user.code !== process.env.BACKDOOR)
+           return res.status(400).json({status: 'ERROR'})
+
+        user.verified = true
+
+        await user.save()
+        res.json({status: 'OK'})
+
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({status: 'ERROR'})
+    }
+}
+
 module.exports = {
     login,
     logout,
-    adduser
+    adduser,
+    verify
 }

@@ -1,4 +1,5 @@
 const tttUtil = require("../util/tttUtil")
+const User = require("../models/user")
 
 helloWorld = (req, res) => {
     res.send("Hello World")
@@ -41,41 +42,56 @@ postName = (req, res) => {
     res.send(html);
 }
 
-playGame = (req, res) => {
+playGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
     let board = req.body;
     let winner = " ";
+
+    const username = req.session.username
+    let currentUser = await User.findOne({username})
+
+    if(!currentUser)
+        return res.status(400).json({status: "ERROR"})
+
+    if(board.grid === null)
+        return res.json({grid: currentUser.board, winner, status: "OK"});
+
+    // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
+    const isLegal = tttUtil.isBoardLegal(currentUser.board, board.grid)
+    if(!isLegal)
+        return res.json({grid: currentUser.board, winner, status: "ERROR"})
 
     // CHECKING WINNER AFTER USER INPUT
     let potentialWinner = tttUtil.checkWinner(board);
     if (potentialWinner !== " ") {
         winner = potentialWinner;
-        return res.json({grid: board.grid, winner});
+        currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+        await currentUser.save()
+        return res.json({grid: currentUser.board, winner, status: "OK"});
     }
+
+    // SERVER MAKING A MOVE
     for (let i = 0; i < board.grid.length; i++) {
         if (board.grid[i] === " ") {
             board.grid[i] = "X";
-            altered = 1;
             break;
         }
     }
-
-    //   // CHECK IF LAST INPUT WAS BOT AND GAME IS OVER
-    //   const remainigSpace = calculateRemainingSpace(board);
-
-    // IF NO MORE INPUT IS POSSIBLE AND NO WINNER...
-    //   if (altered == 0) {
-    //     board.winner = "Q"; // GAME OVER
-    //     return res.json(board);
-    //   }
 
     // CHECKING WINNER AFTER BOT INPUT
     potentialWinner = tttUtil.checkWinner(board);
     if (potentialWinner !== " ") {
         winner = potentialWinner;
-        return res.json({grid: board.grid, winner});
+        currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+        await currentUser.save()
+        return res.json({grid: currentUser.board, winner, status: "OK"});
     }
-    res.json({grid: board.grid, winner});
+
+
+    currentUser.board = board.grid
+    await currentUser.save()
+
+    res.json({grid: board.grid, winner, status: "OK"});
 }
 
 module.exports = {

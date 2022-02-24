@@ -4,11 +4,23 @@ const NodeMailer = require('nodemailer')
 const crypto = require('crypto')
 
 // FOR NODEMAILER
-const transporter = NodeMailer.createTransport({
-    sendmail: true,
-    newline: 'unix',
-    path: '/usr/sbin/sendmail',
-})
+// const transporter = NodeMailer.createTransport({
+//     sendmail: true,
+//     newline: 'unix',
+//     path: '/usr/sbin/sendmail',
+// })
+
+let transporter = NodeMailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "eiesusung20@gmail.com", // generated ethereal user
+        pass: "eiesusung2020!", // generated ethereal password
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
+
 
 login = async(req, res) => {
     const {username, password} = req.body
@@ -51,7 +63,8 @@ adduser = async (req, res) => {
         }
 
         const hashedPw = await bcrypt.hash(password, 10)
-        const verificationCode = crypto.randomBytes(4).toString()
+        const verificationCode = Math.random().toString(36).slice(2)
+        console.log(verificationCode)
 
         user = new User({
             username,
@@ -64,18 +77,26 @@ adduser = async (req, res) => {
         await user.save()
 
         // SEND VERIFICATION EMAIL
-        transporter.sendMail({
-            to: email,
-            from: `"Name" <chk.cse356.compas.cs.stonybrook.edu>`,
+        // transporter.sendMail({
+        //     to: email,
+        //     from: `"Name" <chk.cse356.compas.cs.stonybrook.edu>`,
+        //     subject: `Verification email for ${username}`,
+        //     text: `Verification Code: ${verificationCode}`
+        // })
+
+        let info = await transporter.sendMail({
+            from: 'eiesusung0@gmail.com', // sender address
+            to: email, // list of receivers
             subject: `Verification email for ${username}`,
             text: `Verification Code: ${verificationCode}`
-        })
+        });
 
+        console.log("INFO: ", info)
 
         res.json({status: 'OK'})
     } catch (err) {
         console.log("Error finding user")
-        console.log('error')
+        console.log(err)
         res.status(400).json({status: 'ERROR'})
     }
 

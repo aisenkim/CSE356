@@ -119,7 +119,7 @@ verify = async(req, res) => {
             console.log("USER NOT FOUND")
             return res.status(400).json({status:'ERROR'})
         }
-        if(user.code !== key && user.code != "abracadabra")
+        if(user.code !== key && key !== "abracadabra")
         {
             console.log(`Key: ${key} Backdoor Key: ${process.env.BACKDOOR}`)
             return res.status(400).json({status: 'ERROR'})

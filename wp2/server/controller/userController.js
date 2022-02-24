@@ -115,9 +115,15 @@ verify = async(req, res) => {
         let user = await User.findOne({email})
 
         if(!user)
+        {
+            console.log("USER NOT FOUND")
             return res.status(400).json({status:'ERROR'})
-        if(user.code !== key && user.code !== process.env.BACKDOOR)
-           return res.status(400).json({status: 'ERROR'})
+        }
+        if(user.code !== key && user.code != "abracadabra")
+        {
+            console.log(`Key: ${key} Backdoor Key: ${process.env.BACKDOOR}`)
+            return res.status(400).json({status: 'ERROR'})
+        }
 
         user.verified = true
 

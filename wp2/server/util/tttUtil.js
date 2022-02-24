@@ -33,15 +33,16 @@ const isBoardLegal = (previousBoard, currentBoard) => {
     return alteredCount <= 1
 }
 
-// const calculateRemainingSpace = (board) => {
-//   let spaceRemaining = 0;
-//   for (let i = 0; i < board.grid.length; i++) {
-//     if (board.grid[i] === " ") spaceRemaining++;
-//   }
-//   return spaceRemaining;
-// };
+const calculateRemainingSpace = (board) => {
+  let spaceRemaining = 0;
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === " ") spaceRemaining++;
+  }
+  return spaceRemaining;
+};
 
 module.exports = {
    checkWinner,
-    isBoardLegal
+    isBoardLegal,
+    calculateRemainingSpace
 }

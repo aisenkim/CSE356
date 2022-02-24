@@ -25,17 +25,25 @@ login = async(req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const {username, password} = req.body
 
+    console.log("LOGIN CALLED")
+
     try {
         const user = await User.findOne({username})
 
         // USERS NEED TO GET VERIFIED (EMAIL)
         if (!user || !user.verified)
+        {
+            console.log("USER NOT VERFIED: ", user)
             return res.status(400).json({status: "ERROR"})
+        }
 
         const matching = await bcrypt.compare(password, user.password)
 
         if(!matching)
+        {
+            console.log("PASSWORD doesn't match")
             return res.json({status: "ERROR"})
+        }
 
         req.session.isAuth = true
         req.session.username = username
@@ -47,6 +55,7 @@ login = async(req, res) => {
 }
 
 logout = (req, res) => {
+    console.log("LOGOUT CALLED")
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     req.session.destroy((err) => {
         if(err)
@@ -57,6 +66,7 @@ logout = (req, res) => {
 
 adduser = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
+    console.log("ADDING USER")
     const {username, password, email} = req.body
 
     try {
@@ -90,7 +100,7 @@ adduser = async (req, res) => {
         // })
 
         let info = await transporter.sendMail({
-            from: 'eiesusung0@gmail.com', // sender address
+            from: 'chk@chk.cse356.compas.cs.stonybrook.edu', // sender address
             to: email, // list of receivers
             subject: `Verification email for ${username}`,
             text: `Verification Code: ${verificationCode}`
@@ -111,6 +121,8 @@ verify = async(req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const {email, key} = req.body
 
+    console.log("VERIFY CALLED")
+
     try{
         let user = await User.findOne({email})
 
@@ -126,9 +138,10 @@ verify = async(req, res) => {
         }
 
         user.verified = true
+        console.log("VERIFIED SET TO TRUE")
 
         await user.save()
-        res.json({status: 'OK'})
+        res.status(200).json({status: 'OK'})
 
     } catch (err) {
         console.log(err)

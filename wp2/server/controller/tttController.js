@@ -45,7 +45,7 @@ postName = (req, res) => {
 
 playGame = async (req, res) => {
     console.log("Entered Game")
-    // res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     let board = req.body
     let winner = " "
 
@@ -114,6 +114,7 @@ playGame = async (req, res) => {
  * @return - { status:"OK", games:[ {id:, start_date:}, …] }
  */
 listGame = async (req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const username = req.session.username
     if (!username)
         return res.json({status: "ERROR"})
@@ -125,6 +126,7 @@ listGame = async (req, res) => {
 }
 
 getGame = async (req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const {id} = req.body
     const username = req.session.username
     if (!username)
@@ -137,6 +139,7 @@ getGame = async (req, res) => {
 }
 
 getScore = async (req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     let humanWin = 0
     let serverWin = 0
     let tie = 0

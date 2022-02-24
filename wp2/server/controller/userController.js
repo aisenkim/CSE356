@@ -22,6 +22,7 @@ let transporter = NodeMailer.createTransport({
 
 
 login = async(req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const {username, password} = req.body
 
     try {
@@ -46,6 +47,7 @@ login = async(req, res) => {
 }
 
 logout = (req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     req.session.destroy((err) => {
         if(err)
             throw err;
@@ -54,6 +56,7 @@ logout = (req, res) => {
 }
 
 adduser = async (req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const {username, password, email} = req.body
 
     try {
@@ -105,6 +108,7 @@ adduser = async (req, res) => {
 }
 
 verify = async(req, res) => {
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
     const {email, key} = req.body
 
     try{

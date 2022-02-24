@@ -9,16 +9,16 @@ app.use(express.json());
 
 const exchange = "hw3";
 
-const listen = (res, keys) => {
+const listen = function(res, keys)  {
     amqp.connect('amqp://localhost', (err, connect) => {
         connect.createChannel((err, channel) => {
             channel.assertQueue('', {exclusive: true}, (err, queue) => {
                 keys.forEach(key => channel.bindQueue(queue.queue, exchange, key))
 
                 channel.consume(queue.queue, (msg) => {
-                    res.status(200).json({msg: msg.content?.toString()})
+                    res.status(200).json({msg: msg.content.toString()})
                     connect.close()
-                })
+                }, {noAck: true})
 
 
             })
@@ -46,6 +46,9 @@ app.post("/speak", (req, res) => {
     res.sendStatus(200)
     speak(key.toString(), msg.toString())
 });
+
+
+
 
 app.listen(PORT, () => {
     console.log(`Started on port: ${PORT}`);

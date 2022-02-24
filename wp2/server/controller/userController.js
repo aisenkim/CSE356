@@ -1,13 +1,7 @@
 const User = require('../models/user')
 const bcrypt = require("bcryptjs")
 const NodeMailer = require('nodemailer')
-
-// FOR NODEMAILER
-// const transporter = NodeMailer.createTransport({
-//     sendmail: true,
-//     newline: 'unix',
-//     path: '/usr/sbin/sendmail',
-// })
+const postmark = require('postmark')
 
 let transporter = NodeMailer.createTransport({
     service: "gmail",
@@ -20,6 +14,7 @@ let transporter = NodeMailer.createTransport({
     }
 });
 
+const client = new postmark.ServerClient("be3d5246-a0a8-4107-ab3f-51cf05a9eee2");
 
 login = async(req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
@@ -91,19 +86,20 @@ adduser = async (req, res) => {
 
         await user.save()
 
-        // SEND VERIFICATION EMAIL
-        // transporter.sendMail({
-        //     to: email,
-        //     from: `"Name" <chk.cse356.compas.cs.stonybrook.edu>`,
+        // SEND VERIFICATION EMAIL WITH GMAIL
+        // let info = await transporter.sendMail({
+        //     from: 'chk@chk.cse356.compas.cs.stonybrook.edu', // sender address
+        //     to: email, // list of receivers
         //     subject: `Verification email for ${username}`,
         //     text: `Verification Code: ${verificationCode}`
-        // })
+        // });
 
-        let info = await transporter.sendMail({
-            from: 'chk@chk.cse356.compas.cs.stonybrook.edu', // sender address
-            to: email, // list of receivers
-            subject: `Verification email for ${username}`,
-            text: `Verification Code: ${verificationCode}`
+        //POSTMARK SENDING EMAIL VERIFICATION
+        client.sendEmail({
+            "From": "chk@chk.cse356.compas.cs.stonybrook.edu",
+            "To": email,
+            "Subject": "Verification Email",
+            "TextBody": verificationCode
         });
 
         console.log("INFO: ", info)

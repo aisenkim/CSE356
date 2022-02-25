@@ -44,10 +44,11 @@ postName = (req, res) => {
 }
 
 playGame = async (req, res) => {
-    console.log("Entered Game")
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
-    let board = req.body
+    // let board = req.body
     let winner = " "
+
+    const {move} = req.body // INTEGER INDEX OF MOVE MADE BY A HUMAN USER
 
     const username = req.session.username
     let currentUser = await User.findOne({username})
@@ -55,20 +56,26 @@ playGame = async (req, res) => {
     if (!currentUser)
         return res.status(400).json({status: "ERROR"})
 
-    if (board.grid === null)
+    if (move === null)
         return res.json({grid: currentUser.board, winner, status: "OK"});
+    else if(move === undefined || !Number.isInteger(move) || move > 8 || move < 0)
+        return res.json({grid: currentUser.board, winner, status: "ERROR"});
+
 
     // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
-    const isLegal = tttUtil.isBoardLegal(currentUser.board, board.grid)
+    const isLegal = tttUtil.isMoveLegal(currentUser.board, move)
     if (!isLegal)
         return res.json({grid: currentUser.board, winner, status: "ERROR"})
 
+    // // ADD USER'S MOVE TO THE GRID IF MOVE IS LEGAL
+    currentUser.board[move] = 'O'
+
     // CHECKING WINNER AFTER USER INPUT
-    let potentialWinner = tttUtil.checkWinner(board);
+    let potentialWinner = tttUtil.checkWinner(currentUser.board);
     if (potentialWinner !== " ") {
         winner = potentialWinner;
         // SAVE GAME STATE
-        const GameWinner = await new Game({username, winner, grid: board.grid})
+        const GameWinner = await new Game({username, winner, grid: currentUser.board})
         await GameWinner.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
@@ -76,38 +83,36 @@ playGame = async (req, res) => {
     }
 
     // SERVER MAKING A MOVE
-    for (let i = 0; i < board.grid.length; i++) {
-        if (board.grid[i] === " ") {
-            board.grid[i] = "X";
+    for (let i = 0; i < currentUser.board.length; i++) {
+        if (currentUser.board[i] === " ") {
+            currentUser.board[i] = "X";
             break;
         }
     }
 
     // CHECKING WINNER AFTER BOT INPUT
-    potentialWinner = tttUtil.checkWinner(board);
+    potentialWinner = tttUtil.checkWinner(currentUser.board);
     if (potentialWinner !== " ") {
         winner = potentialWinner;
         // SAVE GAME STATE
-        const GameWinner = await new Game({username, winner, grid: board.grid})
+        const GameWinner = await new Game({username, winner, grid: currentUser.board})
         await GameWinner.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
         return res.json({grid: currentUser.board, winner, status: "OK"});
-    } else if (tttUtil.calculateRemainingSpace(board.grid) === 0) {
+    } else if (tttUtil.calculateRemainingSpace(currentUser.board) === 0) {
         // CHECKING IF A TIE
         // Save State
-        const GameWinner = await new Game({username, winner, grid: board.grid})
+        const GameWinner = await new Game({username, winner, grid: currentUser.board})
         await GameWinner.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
         return res.json({grid: currentUser.board, winner: " ", status: "OK"});
     }
 
-
-    currentUser.board = board.grid
     await currentUser.save()
 
-    return res.json({grid: board.grid, winner, status: "OK"});
+    return res.json({grid: currentUser.board, winner, status: "OK"});
 }
 
 /**

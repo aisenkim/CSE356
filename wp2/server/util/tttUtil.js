@@ -1,6 +1,5 @@
-const checkWinner = (board) => {
+const checkWinner = (grid) => {
     let winner = " ";
-    const grid = board.grid;
     // HORIZONTAL
     if (grid[0] === grid[1] && grid[1] === grid[2]) winner = grid[0];
     else if (grid[3] === grid[4] && grid[4] === grid[5]) winner = grid[3];
@@ -15,22 +14,14 @@ const checkWinner = (board) => {
     return winner;
 };
 
-/**
- * Check if client side user has altered the board
- * And it's a valid move
- * @param previousBoard - last move saved on db
- * @param currentBoard - current board after client made move
- * @return true - Legal false - Illegal
- */
-const isBoardLegal = (previousBoard, currentBoard) => {
-   let alteredCount = 0; // If altered count > 1 mean altered
+const isMoveLegal = (usersBoard, move) => {
 
-  for (let i = 0; i < previousBoard.length; i++) {
-      if(previousBoard[i] !== currentBoard[i])
-          alteredCount++
+  for (let i = 0; i <usersBoard.length; i++) {
+    if(i === move && usersBoard[i] !== " ")
+      return false
   }
 
-    return alteredCount <= 1
+    return true
 }
 
 const calculateRemainingSpace = (board) => {
@@ -43,6 +34,6 @@ const calculateRemainingSpace = (board) => {
 
 module.exports = {
    checkWinner,
-    isBoardLegal,
+   isMoveLegal,
     calculateRemainingSpace
 }

@@ -120,10 +120,11 @@ playGame = async (req, res) => {
  */
 listGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
-    const username = req.session.username
-    if (!username)
-        return res.json({status: "ERROR"})
-    const games = await Game.find({username})
+    // const username = req.session.username
+    // if (!username)
+    //     return res.json({status: "ERROR"})
+    // const games = await Game.find({username})
+     const games = await Game.find()
     if (!games)
         return res.json({status: "OK", games: []})
     const gameList = games.map(game => ({id: game._id, start_date: game.start_date}))

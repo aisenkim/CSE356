@@ -49,6 +49,7 @@ playGame = async (req, res) => {
     let winner = " "
 
     const {move} = req.body // INTEGER INDEX OF MOVE MADE BY A HUMAN USER
+    console.log("USER MOVE MADE: ", move)
 
     const username = req.session.username
     let currentUser = await User.findOne({username})
@@ -77,6 +78,7 @@ playGame = async (req, res) => {
         // SAVE GAME STATE
         const GameWinner = await new Game({username, grid: currentUser.board, winner})
         await GameWinner.save()
+        console.log("GAME SAVED AFTER USER INPUT")
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
         return res.json({grid: currentUser.board, winner, status: "OK"});
@@ -86,6 +88,7 @@ playGame = async (req, res) => {
     for (let i = 0; i < currentUser.board.length; i++) {
         if (currentUser.board[i] === " ") {
             currentUser.board[i] = "X";
+            console.log("BOT MOVE: ", i)
             break;
         }
     }
@@ -105,6 +108,7 @@ playGame = async (req, res) => {
         // Save State
         const GameWinner = await new Game({username, grid: currentUser.board, winner})
         await GameWinner.save()
+        console.log("GAME SAVED AFTER SERVER INPUT")
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
         return res.json({grid: currentUser.board, winner: " ", status: "OK"});
@@ -120,11 +124,11 @@ playGame = async (req, res) => {
  */
 listGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
-    // const username = req.session.username
-    // if (!username)
-    //     return res.json({status: "ERROR"})
-    // const games = await Game.find({username})
-     const games = await Game.find()
+    const username = req.session.username
+    if (!username)
+        return res.json({status: "ERROR"})
+    const games = await Game.find({username})
+    //  const games = await Game.find()
     if (!games)
         return res.json({status: "OK", games: []})
     const gameList = games.map(game => ({id: game._id, start_date: game.start_date}))

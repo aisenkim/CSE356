@@ -29,7 +29,7 @@ login = async(req, res) => {
         if (!user || !user.verified)
         {
             console.log("USER NOT VERFIED: ", user)
-            return res.status(400).json({status: "ERROR"})
+            return res.json({status: "ERROR"})
         }
 
         const matching = await bcrypt.compare(password, user.password)
@@ -108,7 +108,7 @@ adduser = async (req, res) => {
     } catch (err) {
         console.log("Error finding user")
         console.log(err)
-        res.status(400).json({status: 'ERROR'})
+        res.json({status: 'ERROR'})
     }
 
 }
@@ -125,23 +125,23 @@ verify = async(req, res) => {
         if(!user)
         {
             console.log("USER NOT FOUND")
-            return res.status(400).json({status:'ERROR'})
+            return res.json({status:'ERROR'})
         }
         if(user.code !== key && key !== "abracadabra")
         {
             console.log(`Key: ${key} Backdoor Key: ${process.env.BACKDOOR}`)
-            return res.status(400).json({status: 'ERROR'})
+            return res.json({status: 'ERROR'})
         }
 
         user.verified = true
         console.log("VERIFIED SET TO TRUE")
 
         await user.save()
-        res.status(200).json({status: 'OK'})
+        res.json({status: 'OK'})
 
     } catch (err) {
         console.log(err)
-        res.status(400).json({status: 'ERROR'})
+        res.json({status: 'ERROR'})
     }
 }
 

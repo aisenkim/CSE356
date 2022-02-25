@@ -81,7 +81,8 @@ adduser = async (req, res) => {
             password: hashedPw,
             email,
             verified: false,
-            code: verificationCode
+            code: verificationCode,
+            board: [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         })
 
         await user.save()

@@ -75,7 +75,7 @@ playGame = async (req, res) => {
     if (potentialWinner !== " ") {
         winner = potentialWinner;
         // SAVE GAME STATE
-        const GameWinner = await new Game({username, winner, grid: currentUser.board})
+        const GameWinner = await new Game({username, grid: currentUser.board, winner})
         await GameWinner.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
@@ -95,7 +95,7 @@ playGame = async (req, res) => {
     if (potentialWinner !== " ") {
         winner = potentialWinner;
         // SAVE GAME STATE
-        const GameWinner = await new Game({username, winner, grid: currentUser.board})
+        const GameWinner = await new Game({username, grid: currentUser.board, winner})
         await GameWinner.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()
@@ -103,7 +103,7 @@ playGame = async (req, res) => {
     } else if (tttUtil.calculateRemainingSpace(currentUser.board) === 0) {
         // CHECKING IF A TIE
         // Save State
-        const GameWinner = await new Game({username, winner, grid: currentUser.board})
+        const GameWinner = await new Game({username, grid: currentUser.board, winner})
         await GameWinner.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         await currentUser.save()

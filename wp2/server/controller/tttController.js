@@ -116,6 +116,7 @@ playGame = async (req, res) => {
 
     await currentUser.save()
 
+    console.log("Current Board: ", currentUser.board)
     return res.json({grid: currentUser.board, winner, status: "OK"});
 }
 
@@ -124,6 +125,7 @@ playGame = async (req, res) => {
  */
 listGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
+    console.log("listGames called")
     const username = req.session.username
     if (!username)
         return res.json({status: "ERROR"})
@@ -132,11 +134,13 @@ listGame = async (req, res) => {
     if (!games)
         return res.json({status: "OK", games: []})
     const gameList = games.map(game => ({id: game._id, start_date: game.start_date}))
+    console.log("GAME LIST in listgames: ", gameList)
     return res.json({status: "OK", games: gameList})
 }
 
 getGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812")
+    console.log("getGame called")
     const {id} = req.body
     const username = req.session.username
     if (!username)

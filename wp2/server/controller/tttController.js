@@ -57,16 +57,24 @@ playGame = async (req, res) => {
     if (!currentUser)
         return res.status(400).json({status: "ERROR"})
 
-    if (move === null)
+    if (move === null) {
+        console.log("Move is null")
         return res.json({grid: currentUser.board, winner, status: "OK"});
+    }
     else if(move === undefined || !Number.isInteger(move) || move > 8 || move < 0)
+    {
+        console.log("move is undefined or it's not a number", move)
         return res.json({grid: currentUser.board, winner, status: "ERROR"});
+    }
 
 
     // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
     const isLegal = tttUtil.isMoveLegal(currentUser.board, move)
     if (!isLegal)
+    {
+        console.log("Board is not legal")
         return res.json({grid: currentUser.board, winner, status: "ERROR"})
+    }
 
     // // ADD USER'S MOVE TO THE GRID IF MOVE IS LEGAL
     currentUser.board[move] = 'O'
@@ -74,6 +82,7 @@ playGame = async (req, res) => {
     // CHECKING WINNER AFTER USER INPUT
     let potentialWinner = tttUtil.checkWinner(currentUser.board);
     if (potentialWinner !== " ") {
+        console.log("Found a winner: ", potentialWinner)
         winner = potentialWinner;
         // SAVE GAME STATE
         const GameWinner = await new Game({username, grid: currentUser.board, winner})
@@ -96,6 +105,7 @@ playGame = async (req, res) => {
     // CHECKING WINNER AFTER BOT INPUT
     potentialWinner = tttUtil.checkWinner(currentUser.board);
     if (potentialWinner !== " ") {
+        console.log("Winner after bot move: ", potentialWinner)
         winner = potentialWinner;
         // SAVE GAME STATE
         const GameWinner = await new Game({username, grid: currentUser.board, winner})
@@ -106,6 +116,7 @@ playGame = async (req, res) => {
     } else if (tttUtil.calculateRemainingSpace(currentUser.board) === 0) {
         // CHECKING IF A TIE
         // Save State
+        console.log("This is a tie state")
         const GameWinner = await new Game({username, grid: currentUser.board, winner})
         await GameWinner.save()
         console.log("GAME SAVED AFTER SERVER INPUT")
@@ -128,11 +139,17 @@ listGame = async (req, res) => {
     console.log("listGames called")
     const username = req.session.username
     if (!username)
+    {
+        console.log("username not found")
         return res.json({status: "ERROR"})
+    }
     const games = await Game.find({username})
     //  const games = await Game.find()
     if (!games)
+    {
+        console.log("Can't find a game")
         return res.json({status: "OK", games: []})
+    }
     const gameList = games.map(game => ({id: game._id, start_date: game.start_date}))
     console.log("GAME LIST in listgames: ", gameList)
     return res.json({status: "OK", games: gameList})

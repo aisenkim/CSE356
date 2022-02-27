@@ -1,11 +1,12 @@
 const isAuthenticated = (req, res, next) => {
-    console.log(req.session)
    if(req.session.isAuth)
    {
+       console.log("Is Authenticated for user: ", req.session.username)
        next()
    }
     else
    {
+       console.log("Problem with authentication")
        return res.json({status: "ERROR"})
    }
 }

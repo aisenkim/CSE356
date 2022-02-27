@@ -145,7 +145,7 @@ playGame = async (req, res) => {
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2) // assign new boardId for next game
         await currentUser.save()
-        return res.json({grid: currentUser.board, winner: " ", status: "OK"});
+        return res.json({status: "OK", grid: currentUser.board, winner: " "});
     }
 
     await currentUser.save()
@@ -156,7 +156,7 @@ playGame = async (req, res) => {
     await game.save()
 
     console.log("Current Board: ", currentUser.board)
-    return res.json({grid: currentUser.board, winner, status: "OK"});
+    return res.json({status: "OK", grid: currentUser.board, winner: winner});
 }
 
 /**

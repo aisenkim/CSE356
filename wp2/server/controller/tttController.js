@@ -54,6 +54,15 @@ playGame = async (req, res) => {
     const username = req.session.username
     let currentUser = await User.findOne({username})
 
+    // Make a game if gameid doesn't exist in the session
+    let game = await Game.findOne({id: currentUser.boardId})
+    if(!game)
+    {
+        game = new Game({id: currentUser.boardId, username, grid: currentUser.board, winner})
+        console.log("Game newly created")
+    }
+    console.log("GAME: ", game)
+
     if (!currentUser)
         return res.status(400).json({status: "ERROR"})
 
@@ -85,10 +94,14 @@ playGame = async (req, res) => {
         console.log("Found a winner: ", potentialWinner)
         winner = potentialWinner;
         // SAVE GAME STATE
-        const GameWinner = await new Game({username, grid: currentUser.board, winner})
-        await GameWinner.save()
+        // const GameWinner = await new Game({username, grid: currentUser.board, winner})
+        // await GameWinner.save()
+        game.grid = currentUser.board
+        game.winner = winner
+        await game.save()
         console.log("GAME SAVED AFTER USER INPUT")
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+        currentUser.boardId = Math.random().toString(36).slice(2) // assign new boardId for next game
         await currentUser.save()
         return res.json({grid: currentUser.board, winner, status: "OK"});
     }
@@ -108,24 +121,39 @@ playGame = async (req, res) => {
         console.log("Winner after bot move: ", potentialWinner)
         winner = potentialWinner;
         // SAVE GAME STATE
-        const GameWinner = await new Game({username, grid: currentUser.board, winner})
-        await GameWinner.save()
+        // const gameId = req.session.gameId
+        // let savedGame = Game.findOne({id: gameId})
+        // const GameWinner = await new Game({username, grid: currentUser.board, winner})
+        // await GameWinner.save()
+        game.grid = currentUser.board
+        game.winner = winner
+        await game.save()
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+        currentUser.boardId = Math.random().toString(36).slice(2) // assign new boardId for next game
         await currentUser.save()
         return res.json({grid: currentUser.board, winner, status: "OK"});
     } else if (tttUtil.calculateRemainingSpace(currentUser.board) === 0) {
         // CHECKING IF A TIE
         // Save State
         console.log("This is a tie state")
-        const GameWinner = await new Game({username, grid: currentUser.board, winner})
-        await GameWinner.save()
+        // const GameWinner = await new Game({username, grid: currentUser.board, winner})
+        // await GameWinner.save()
+        game.grid = currentUser.board
+        game.winner = winner
+        await game.save()
         console.log("GAME SAVED AFTER SERVER INPUT")
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+        currentUser.boardId = Math.random().toString(36).slice(2) // assign new boardId for next game
         await currentUser.save()
         return res.json({grid: currentUser.board, winner: " ", status: "OK"});
     }
 
     await currentUser.save()
+
+
+    game.grid = currentUser.board
+    console.log("Current game grid: ", game.grid)
+    await game.save()
 
     console.log("Current Board: ", currentUser.board)
     return res.json({grid: currentUser.board, winner, status: "OK"});
@@ -150,7 +178,10 @@ listGame = async (req, res) => {
         console.log("Can't find a game")
         return res.json({status: "OK", games: []})
     }
-    const gameList = games.map(game => ({id: game._id, start_date: game.start_date}))
+    console.log("gameList length: ", games.length)
+    const gameList = games.map(game => {
+        return ({id: game.id, start_date: game.start_date})
+    })
     console.log("GAME LIST in listgames: ", gameList)
     return res.json({status: "OK", games: gameList})
 }
@@ -162,7 +193,7 @@ getGame = async (req, res) => {
     const username = req.session.username
     if (!username)
         return res.json({status: "ERROR"})
-    const games = await Game.findOne({username, _id: id})
+    const games = await Game.findOne({username, id: id})
     if (!games)
         return res.json({status: "ERROR"})
     return res.json({status: "OK", grid: games.grid, winner: games.winner})

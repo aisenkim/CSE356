@@ -82,7 +82,8 @@ adduser = async (req, res) => {
             email,
             verified: false,
             code: verificationCode,
-            board: [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+            board: [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            boardId: Math.random().toString(36).slice(2)
         })
 
         await user.save()

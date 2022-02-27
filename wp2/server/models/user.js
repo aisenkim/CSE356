@@ -9,7 +9,8 @@ const UserSchema = new Schema(
         email: {type: String, required: true},
         verified: {type: Boolean, required: false},
         code: {type: String, required: false},
-        board: {type: Array, required: false}
+        board: {type: Array, required: false},
+        boardId: {type: String, required: false}
     }
 )
 

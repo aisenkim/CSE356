@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
 
 const GameSchema = new Schema({
+    id: {type: String, required: true},
     username: {type: String, required: true},
     grid: {type: Array, required: true},
     winner: {type: String, required: true},

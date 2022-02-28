@@ -77,7 +77,10 @@ playGame = async (req, res) => {
         return res.json({grid: currentUser.board, winner, status: "ERROR"});
     }
 
-    move = parseInt(move)
+    move = parseInt(move);
+    // OUT OF BOUNDS ERROR
+    if (move < 0 || move > 8)
+        return res.json({grid: currentUser.board, winner, status: "ERROR"});
 
     // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
     const isLegal = tttUtil.isMoveLegal(currentUser.board, move);
@@ -101,10 +104,11 @@ playGame = async (req, res) => {
         game.winner = winner;
         await game.save();
         console.log("GAME SAVED AFTER USER INPUT");
-        currentUser.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+        const userWinnerBoard = currentUser.board
+        currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2); // assign new boardId for next game
         await currentUser.save();
-        return res.json({grid: currentUser.board, winner, status: "OK"});
+        return res.json({grid: userWinnerBoard, winner, status: "OK"});
     }
 
     // SERVER MAKING A MOVE
@@ -126,13 +130,14 @@ playGame = async (req, res) => {
         // let savedGame = Game.findOne({id: gameId})
         // const GameWinner = await new Game({username, grid: currentUser.board, winner})
         // await GameWinner.save()
-        game.grid = currentUser.board;
-        game.winner = winner;
-        await game.save();
-        currentUser.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+        game.grid = currentUser.board
+        game.winner = winner
+        await game.save()
+        const botWinnerBoard = currentUser.board
+        currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2); // assign new boardId for next game
         await currentUser.save();
-        return res.json({grid: currentUser.board, winner, status: "OK"});
+        return res.json({grid: botWinnerBoard, winner, status: "OK"});
     } else if (tttUtil.calculateRemainingSpace(currentUser.board) === 0) {
         // CHECKING IF A TIE
         // Save State
@@ -143,20 +148,20 @@ playGame = async (req, res) => {
         game.winner = winner;
         await game.save();
         console.log("GAME SAVED AFTER SERVER INPUT");
-        currentUser.board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+        const tieBoard = currentUser.board;
+        currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2); // assign new boardId for next game
         await currentUser.save();
-        return res.json({status: "OK", grid: currentUser.board, winner: " "});
+        return res.json({status: "OK", grid: tieBoard, winner: " "});
     }
 
     await currentUser.save();
 
     game.grid = currentUser.board;
-    console.log("Current game grid: ", game.grid);
     await game.save();
+    console.log("Current game grid: ", game.grid);
 
-    console.log("Current Board: ", currentUser.board);
-    return res.json({status: "OK", grid: currentUser.board, winner: winner});
+    return res.json({status: "OK", grid: currentUser.board, winner: ' '});
 };
 
 /**

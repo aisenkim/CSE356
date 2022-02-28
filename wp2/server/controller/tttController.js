@@ -48,7 +48,7 @@ playGame = async (req, res) => {
   // let board = req.body
   let winner = " ";
 
-  const { move } = req.body; // INTEGER INDEX OF MOVE MADE BY A HUMAN USER
+  let { move } = req.body; // INTEGER INDEX OF MOVE MADE BY A HUMAN USER
   console.log("USER MOVE MADE: ", move);
 
   const username = req.session.username;
@@ -67,20 +67,17 @@ playGame = async (req, res) => {
   }
   console.log("GAME: ", game);
 
-  if (!currentUser) return res.status(400).json({ status: "ERROR" });
+  if (!currentUser) return res.json({ status: "ERROR" });
 
   if (move === null) {
     console.log("Move is null");
     return res.json({ grid: currentUser.board, winner, status: "OK" });
-  } else if (
-    move === undefined ||
-    !Number.isInteger(move) ||
-    move > 8 ||
-    move < 0
-  ) {
+  } else if (move === undefined ) {
     console.log("move is undefined or it's not a number", move);
     return res.json({ grid: currentUser.board, winner, status: "ERROR" });
   }
+
+  move = parseInt(move)
 
   // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
   const isLegal = tttUtil.isMoveLegal(currentUser.board, move);

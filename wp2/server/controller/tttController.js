@@ -3,7 +3,8 @@ const User = require("../models/user");
 const Game = require("../models/game");
 
 helloWorld = (req, res) => {
-    res.send("Hello World");
+  res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
+  res.send("Hello World");
 };
 
 postName = (req, res) => {

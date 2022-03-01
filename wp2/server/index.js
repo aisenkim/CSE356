@@ -1,5 +1,5 @@
 const express = require("express")
-const cors = require("cors")
+// const cors = require("cors")
 const cookieParser = require('cookie-parser')
 const session = require("express-session")
 const MongoDBSession = require('connect-mongodb-session')(session)
@@ -22,19 +22,19 @@ const store = new MongoDBSession({
     collection: 'userSessions'
 })
 
+// USES
+app.use(express.urlencoded({extended: true}));
+// app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+
 // Session Config
 app.use(session({
     secret: process.env.SESSION_SECRET,
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     store
 }))
-
-// USES
-app.use(express.urlencoded({extended: true}));
-app.use(cors());
-app.use(express.json());
-app.use(cookieParser());
 
 // ROUTE SETUP
 const tttRouter = require("./routes/tttRouter")

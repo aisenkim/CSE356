@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Game = require("../models/game");
 
 helloWorld = (req, res) => {
+  console.log("Reached Hello World *(*(*(*(*(*(*(*(*(*(*(")
   res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
   res.send("Hello World");
 };

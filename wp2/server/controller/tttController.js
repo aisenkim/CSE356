@@ -47,6 +47,8 @@ postName = (req, res) => {
 
 playGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
+    console.log("current request: ...")
+    console.log(req.body)
     // let board = req.body
     let winner = " ";
 
@@ -55,6 +57,7 @@ playGame = async (req, res) => {
 
     const username = req.session.username;
     let currentUser = await User.findOne({username});
+    console.log("current user: ", currentUser.username)
 
     // Make a game if gameid doesn't exist in the session
     let game = await Game.findOne({id: currentUser.boardId});
@@ -73,26 +76,26 @@ playGame = async (req, res) => {
 
     if (move === null) {
         console.log("Move is null");
-        return res.json({grid: currentUser.board, winner, status: "OK"});
+        return res.json({grid: currentUser.board, winner: null, status: "OK"});
     } else if (move === undefined) {
         console.log("move is undefined or it's not a number", move);
-        return res.json({grid: currentUser.board, winner, status: "ERROR"});
+        return res.json({grid: currentUser.board, winner: null, status: "ERROR"});
     }
 
     move = parseInt(move);
     // OUT OF BOUNDS ERROR
     if (move < 0 || move > 8)
-        return res.json({grid: currentUser.board, winner, status: "ERROR"});
+        return res.json({grid: currentUser.board, winner: null, status: "ERROR"});
 
     // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
     const isLegal = tttUtil.isMoveLegal(currentUser.board, move);
     if (!isLegal) {
         console.log("Board is not legal");
-        return res.json({grid: currentUser.board, winner, status: "ERROR"});
+        return res.json({grid: currentUser.board, winner: null, status: "ERROR"});
     }
 
     // // ADD USER'S MOVE TO THE GRID IF MOVE IS LEGAL
-    currentUser.board[move] = "O";
+    currentUser.board[move] = "X";
 
     // CHECKING WINNER AFTER USER INPUT
     let potentialWinner = tttUtil.checkWinner(currentUser.board);
@@ -116,7 +119,7 @@ playGame = async (req, res) => {
     // SERVER MAKING A MOVE
     for (let i = 0; i < currentUser.board.length; i++) {
         if (currentUser.board[i] === " ") {
-            currentUser.board[i] = "X";
+            currentUser.board[i] = "O";
             console.log("BOT MOVE: ", i);
             break;
         }
@@ -154,7 +157,7 @@ playGame = async (req, res) => {
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2); // assign new boardId for next game
         await currentUser.save();
-        return res.json({status: "OK", grid: tieBoard, winner: " "});
+        return res.json({grid: tieBoard, winner: winner, status: "OK"});
     }
 
     await currentUser.save();
@@ -163,7 +166,7 @@ playGame = async (req, res) => {
     await game.save();
     console.log("Current game grid: ", game.grid);
 
-    return res.json({status: "OK", grid: currentUser.board, winner: ' '});
+    return res.json({status: "OK", grid: currentUser.board, winner: null});
 };
 
 /**

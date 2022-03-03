@@ -1,0 +1,2 @@
+To access with username and password
+mongo -u root -p

@@ -3,7 +3,7 @@ import pathlib
 import json
 from pymongo import MongoClient, InsertOne
 
-client = MongoClient("mongodb://root:password@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false")
+client = MongoClient("mongodb://root:password@localhost:27017")
 db = client["hw2"]
 
 Collection = db["factbook"]
@@ -13,7 +13,6 @@ for path in pathlib.Path("factbook.json").iterdir():
     if path.is_file():
         continue
     else:
-        print(path)
         for insidePath in pathlib.Path(path).glob('*.json'):
             if insidePath.is_file():
                 with open(insidePath) as file:

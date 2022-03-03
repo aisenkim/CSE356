@@ -68,7 +68,7 @@ const loginClient = function() {
   fetch(loginUrl, loginInfo)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
+
       });
 
 }

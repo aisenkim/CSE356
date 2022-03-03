@@ -45,5 +45,5 @@ app.use('/', userRouter)
 
 // STARTING POINT
 app.listen(port, () => {
-    console.log(`Example App For Deploying Nginx SSL on port: ${port}`);
+    
 });

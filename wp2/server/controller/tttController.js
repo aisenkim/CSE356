@@ -3,9 +3,8 @@ const User = require("../models/user");
 const Game = require("../models/game");
 
 helloWorld = (req, res) => {
-  console.log("Reached Hello World *(*(*(*(*(*(*(*(*(*(*(")
-  res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
-  res.send("Hello World");
+    res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
+    res.send("Hello World");
 };
 
 postName = (req, res) => {
@@ -47,17 +46,12 @@ postName = (req, res) => {
 
 playGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
-    console.log("current request: ...")
-    console.log(req.body)
     // let board = req.body
     let winner = " ";
-
     let {move} = req.body; // INTEGER INDEX OF MOVE MADE BY A HUMAN USER
-    console.log("USER MOVE MADE: ", move);
 
     const username = req.session.username;
     let currentUser = await User.findOne({username});
-    console.log("current user: ", currentUser.username)
 
     // Make a game if gameid doesn't exist in the session
     let game = await Game.findOne({id: currentUser.boardId});
@@ -68,17 +62,13 @@ playGame = async (req, res) => {
             grid: currentUser.board,
             winner,
         });
-        console.log("Game newly created");
     }
-    console.log("GAME: ", game);
 
     if (!currentUser) return res.json({status: "ERROR"});
 
     if (move === null) {
-        console.log("Move is null");
         return res.json({grid: currentUser.board, winner: null, status: "OK"});
     } else if (move === undefined) {
-        console.log("move is undefined or it's not a number", move);
         return res.json({grid: currentUser.board, winner: null, status: "ERROR"});
     }
 
@@ -90,7 +80,7 @@ playGame = async (req, res) => {
     // CHECK IF BOARD IS LEGAL (CHECK UNAUTHORIZED MOVE MADE)
     const isLegal = tttUtil.isMoveLegal(currentUser.board, move);
     if (!isLegal) {
-        console.log("Board is not legal");
+
         return res.json({grid: currentUser.board, winner: null, status: "ERROR"});
     }
 
@@ -100,7 +90,7 @@ playGame = async (req, res) => {
     // CHECKING WINNER AFTER USER INPUT
     let potentialWinner = tttUtil.checkWinner(currentUser.board);
     if (potentialWinner !== " ") {
-        console.log("Found a winner: ", potentialWinner);
+
         winner = potentialWinner;
         // SAVE GAME STATE
         // const GameWinner = await new Game({username, grid: currentUser.board, winner})
@@ -108,7 +98,7 @@ playGame = async (req, res) => {
         game.grid = currentUser.board;
         game.winner = winner;
         await game.save();
-        console.log("GAME SAVED AFTER USER INPUT");
+
         const userWinnerBoard = currentUser.board
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2); // assign new boardId for next game
@@ -120,7 +110,7 @@ playGame = async (req, res) => {
     for (let i = 0; i < currentUser.board.length; i++) {
         if (currentUser.board[i] === " ") {
             currentUser.board[i] = "O";
-            console.log("BOT MOVE: ", i);
+
             break;
         }
     }
@@ -128,7 +118,7 @@ playGame = async (req, res) => {
     // CHECKING WINNER AFTER BOT INPUT
     potentialWinner = tttUtil.checkWinner(currentUser.board);
     if (potentialWinner !== " ") {
-        console.log("Winner after bot move: ", potentialWinner);
+
         winner = potentialWinner;
         // SAVE GAME STATE
         // const gameId = req.session.gameId
@@ -146,13 +136,13 @@ playGame = async (req, res) => {
     } else if (tttUtil.calculateRemainingSpace(currentUser.board) === 0) {
         // CHECKING IF A TIE
         // Save State
-        console.log("This is a tie state");
+
         // const GameWinner = await new Game({username, grid: currentUser.board, winner})
         // await GameWinner.save()
         game.grid = currentUser.board;
         game.winner = winner;
         await game.save();
-        console.log("GAME SAVED AFTER SERVER INPUT");
+
         const tieBoard = currentUser.board;
         currentUser.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
         currentUser.boardId = Math.random().toString(36).slice(2); // assign new boardId for next game
@@ -164,7 +154,7 @@ playGame = async (req, res) => {
 
     game.grid = currentUser.board;
     await game.save();
-    console.log("Current game grid: ", game.grid);
+
 
     return res.json({status: "OK", grid: currentUser.board, winner: null});
 };
@@ -174,29 +164,29 @@ playGame = async (req, res) => {
  */
 listGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
-    console.log("listGames called");
+
     const username = req.session.username;
     if (!username) {
-        console.log("username not found");
+
         return res.json({status: "ERROR"});
     }
     const games = await Game.find({username});
     //  const games = await Game.find()
     if (!games) {
-        console.log("Can't find a game");
+
         return res.json({status: "OK", games: []});
     }
-    console.log("gameList length: ", games.length);
+
     const gameList = games.map((game) => {
         return {id: game.id, start_date: game.start_date};
     });
-    console.log("GAME LIST in listgames: ", gameList);
+
     return res.json({status: "OK", games: gameList});
 };
 
 getGame = async (req, res) => {
     res.set("X-CSE356", "61f9c246ca96e9505dd3f812");
-    console.log("getGame called");
+
     const {id} = req.body;
     const username = req.session.username;
     if (!username) return res.json({status: "ERROR"});

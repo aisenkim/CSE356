@@ -1,3 +1,6 @@
 # CSE 356
-1.:w
+
+## Info
+
+- Check README.md in each directory for requirements and notes
 
